@@ -97,7 +97,7 @@ Under the hood a `boto3`/`aioboto3` sts client will be created and `assume_role`
 If you want you can also specify extra kwargs for the [sts client](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/session.html#boto3.session.Session.client), and for the [assume_role](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sts/client/assume_role.html) call.
 
 
-> **NOTE**: The `"sts"` service is already specified for the client. 
+> **NOTE**: The "sts" service is already specified for the client. 
 `RoleArn` and `RoleSessionName` are used in the assume role call. 
 
 ```python
