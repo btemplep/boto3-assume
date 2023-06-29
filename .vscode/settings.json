@@ -1,0 +1,15 @@
+{
+    "cSpell.words": [
+        "aioboto",
+        "aiobotocore",
+        "asyncio",
+        "boto",
+        "botocore",
+        "creds",
+        "kwargs",
+        "moto",
+        "pytz",
+        "Refreshable",
+        "sess"
+    ]
+}
