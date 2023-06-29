@@ -51,5 +51,6 @@ def unit_tests(session: nox.Session):
 @nox.session(name="dev-venv")
 def dev_venv_setup(session: nox.Session):
     session.install("-U", "pip", "build")
+    session.install("-e", ".[dev,aioboto3]")
     session.install("-e", ".[dev,all]")
 

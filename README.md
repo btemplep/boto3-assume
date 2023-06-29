@@ -36,7 +36,7 @@ assume_session = assume_role_session(
     RoleSessionName="my-role-session"
 )
 
-# use the assumed session!
+# Create clients, and their credentials will auto-refresh when expired!
 sts_client = assume_session.client("sts", region_name="us-east-1")
 print(sts_client.get_caller_identity())
 # {
@@ -71,7 +71,7 @@ assume_session = assume_role_session(
 )
 
 async def main():
-    # use the assumed session!
+    # Create clients, and their credentials will auto-refresh when expired!
     async with assume_session.client("sts", region_name="us-east-1") as sts_client:
         print(await sts_client.get_caller_identity())
         # {
