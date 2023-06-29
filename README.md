@@ -94,7 +94,7 @@ asyncio.run(main())
 
 Under the hood a `boto3`/`aioboto3` sts client will be created and `assume_role` called to get/refresh credentials.
 
-If you want you can also specify extra kwargs for the [sts client](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/session.html#boto3.session.Session.client), and for the [`assume_role`](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sts/client/assume_role.html) call.
+If you want you can also specify extra kwargs for the [sts client](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/session.html#boto3.session.Session.client), and for the [assume_role](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sts/client/assume_role.html) call.
 
 
 > **NOTE**: The `"sts"` service is already specified for the client. 
@@ -132,14 +132,14 @@ Install the package in editable mode with dev dependencies.
 (venv) $ pip install -e .[dev,all]
 ```
 
-[`nox`](https://nox.thea.codes/en/stable/) is used to manage various dev functions.
+[nox](https://nox.thea.codes/en/stable/) is used to manage various dev functions.
 Start with
 
 ```text
 (venv) $ nox --help
 ```
 
-[`pyenv`](https://github.com/pyenv/pyenv) is used to manage python versions. 
+[pyenv](https://github.com/pyenv/pyenv) is used to manage python versions. 
 To run the nox tests for applicable python version you will first need to install them. 
 In the root project dir run:
 
