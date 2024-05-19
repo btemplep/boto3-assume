@@ -1,7 +1,7 @@
 
 import os
 
-from moto import mock_sts
+from moto import mock_aws
 from moto.server import ThreadedMotoServer
 import pytest
 
@@ -30,7 +30,7 @@ def moto_creds() -> None:
 
 @pytest.fixture(scope="function")
 def sts_moto(moto_creds: None) -> None:
-    with mock_sts():
+    with mock_aws():
         yield 
 
 
