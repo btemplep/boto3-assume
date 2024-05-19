@@ -66,7 +66,7 @@ def test_assume_role_extra_kwargs(
     sts_client.get_caller_identity()
     creds = assume_sess.get_credentials()
     expires_at: datetime.datetime = creds._expiry_time.astimezone(pytz.UTC).replace(tzinfo=None)
-    until_expire = - (datetime.datetime.utcnow() - expires_at)
+    until_expire = - (datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None) - expires_at)
     # test to make sure that the variables were passed so the duration should be 900
     assert until_expire.total_seconds() < 900
     assert until_expire.total_seconds() > 880
@@ -108,7 +108,7 @@ def test_refresh_creds(
     # save the original expire ~ 900 seconds from now
     original_expire = assume_sess._session._credentials._expiry_time
     # create a new one that expires now
-    assume_sess._session._credentials._expiry_time = pytz.UTC.localize(datetime.datetime.utcnow())
+    assume_sess._session._credentials._expiry_time = pytz.UTC.localize(datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None))
     assert assume_sess._session._credentials._expiry_time < original_expire
     # then sleep so there is a difference
     time.sleep(2)

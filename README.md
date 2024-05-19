@@ -12,19 +12,14 @@ Install with pip:
 $ pip install boto3-assume
 ```
 
-It doesn't come with `boto3` or `aioboto3` by default, 
-but if you want to install them with the package it can be done as extras.
-
-```text
-$ pip install boto3-assume[aioboto,boto3]
-```
+> **NOTE** - It currently doesn't come with `boto3` or `aioboto3` , so you need install to one or both as needed.
 
 
 ## Tutorial
 
 There are only 2 functions `assume_role_session` and `assume_role_aio_session`
 
-For boto3:
+For `boto3`:
 
 ```python
 import boto3

@@ -20,15 +20,16 @@ def publish_package(session: nox.Session):
     session.run("twine", "upload", "dist/*", "--repository", "boto3-assume")
 
 
-@nox.session(name="unit-tests")
+@nox.session(
+    name="unit-tests",
+    python=False,
+    venv_backend="none"
+)
 def unit_tests_current_python(session: nox.Session):
     """Run the unit tests in the current venv and generate html coverage report at ./htmlcov/index.html
     """
-    if "--no-venv" not in sys.argv:
-        dev_venv_setup(session=session)
-
     session.run("coverage", "erase")
-    session.run("pytest", "-vvv", "--cov=src/boto3_assume", "--cov-report", "html", "tests/unit")
+    session.run("pytest", "-vvv", "--cov=src/boto3_assume", "--cov-report", "term", "--cov-report", "html", "tests/unit")
 
 
 @nox.session(
@@ -37,7 +38,8 @@ def unit_tests_current_python(session: nox.Session):
         "3.8",
         "3.9",
         "3.10",
-        "3.11"
+        "3.11",
+        "3.12"
     ]
 )
 def unit_tests(session: nox.Session):
@@ -51,6 +53,5 @@ def unit_tests(session: nox.Session):
 @nox.session(name="dev-venv")
 def dev_venv_setup(session: nox.Session):
     session.install("-U", "pip", "build")
-    session.install("-e", ".[dev,aioboto3]")
-    session.install("-e", ".[dev,all]")
+    session.install("-e", ".[dev]")
 

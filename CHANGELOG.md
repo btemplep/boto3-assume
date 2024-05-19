@@ -22,10 +22,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security 
 -->
 
+## [0.1.2] - 2024-05-18
+
+### Removed
+    - `boto3` and `aioboto3` package extras.  They didn't work and weren't documented correctly. 
+
+### Fixed
+    - `datetime.datetime.utcnow()` deprecation in tests for python 3.12
+
+
 ## [0.1.1] - 2023-06-28
 
 ### Fixed
     - Formatting for Changelog, README
+
 
 ## [0.1.0] - 2023-06-28
 
