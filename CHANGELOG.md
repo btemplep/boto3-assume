@@ -22,6 +22,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security 
 -->
 
+## [0.1.3] - 2025-11-28
+
+### Added
+
+- Tags for support of python 3.13 and 3.14
+
+### Removed
+
+- Support for python 3.7-3.9
+
+
 ## [0.1.2] - 2024-05-18
 
 ### Removed

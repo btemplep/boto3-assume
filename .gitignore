@@ -7,3 +7,4 @@ htmlcov/
 dist/
 build/
 docs/_build/
+tester.py

@@ -35,11 +35,11 @@ def unit_tests_current_python(session: nox.Session):
 @nox.session(
     name="unit-tests-py",
     python=[
-        "3.8",
-        "3.9",
         "3.10",
         "3.11",
-        "3.12"
+        "3.12",
+        "3.13",
+        "3.14"
     ]
 )
 def unit_tests(session: nox.Session):
