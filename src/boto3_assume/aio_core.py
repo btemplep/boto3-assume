@@ -1,5 +1,6 @@
 
 from typing import Any, Dict, Optional
+import warnings
 
 import aioboto3
 from aiobotocore.credentials import AioDeferredRefreshableCredentials
@@ -14,7 +15,9 @@ def assume_role_aio_session(
     sts_client_kwargs: Optional[Dict[str, Any]] = None,
     assume_role_kwargs: Optional[Dict[str, Any]] = None
 ) -> aioboto3.Session:
-    """Generate an assume role ``aioboto3`` session, that will automatically refresh credentials.
+    """**DEPRECATED** - Please see the [``aioboto3-assume``](https://github.com/btemplep/aioboto3-assume) package. 
+    
+    Generate an assume role ``aioboto3`` session, that will automatically refresh credentials.
 
     Parameters
     ----------
@@ -34,6 +37,11 @@ def assume_role_aio_session(
     aioboto3.Session
         The assumed role session.
     """
+    warnings.warn(
+        "The `assume_role_aio_session` function is deprecated and will be removed. Please see the [`aioboto3-assume`](https://github.com/btemplep/aioboto3-assume) package.",
+        category=DeprecationWarning,
+        stacklevel=2
+    )
     if sts_client_kwargs is None:
         sts_client_kwargs = {}
     

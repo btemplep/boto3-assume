@@ -1,4 +1,5 @@
 
+
 import datetime
 import time
 
@@ -7,7 +8,7 @@ from botocore.config import Config
 import pytest
 import pytz
 
-from boto3_assume import assume_role_session
+from boto3_assume import assume_role, ForbiddenKWArgError, MissingKWArgError
 from boto3_assume.assume_refresh import AssumeRefresh
 
 
@@ -18,12 +19,13 @@ def test_assume_role(
     sts_arn: str,
 ) -> None:
     sess = boto3.Session()
-    with pytest.deprecated_call():
-        assume_sess = assume_role_session(
-            source_session=sess,
-            RoleArn=role_arn,
-            RoleSessionName=session_name
-        )
+    assume_sess = assume_role(
+        source_session=sess,
+        assume_role_kwargs={
+            "RoleArn": role_arn,
+            "RoleSessionName": session_name
+        }
+    )
     # credentials should only be retrieved once an API call is made
     assert assume_sess.get_credentials()._expiry_time == None
     sts_client = assume_sess.client("sts")
@@ -52,19 +54,20 @@ def test_assume_role_extra_kwargs(
             "mode": "adaptive"
         }
     )
-    with pytest.deprecated_call():
-        assume_sess = assume_role_session(
-            source_session=sess,
-            RoleArn=role_arn,
-            RoleSessionName=session_name,
-            sts_client_kwargs={
-                "region_name": "us-east-1",
-                "config": boto_config
-            },
-            assume_role_kwargs={
-                "DurationSeconds": 900
-            }
-        )
+    assume_sess = assume_role(
+        source_session=sess,
+        assume_role_kwargs={
+            "RoleArn": role_arn,
+            "RoleSessionName": session_name,
+            "DurationSeconds": 900
+        },
+        sts_client_kwargs={
+            "config": boto_config
+        },
+        target_session_kwargs={
+            "region_name": "us-east-1"
+        }
+    )
     sts_client = assume_sess.client("sts")
     sts_client.get_caller_identity()
     creds = assume_sess.get_credentials()
@@ -76,7 +79,6 @@ def test_assume_role_extra_kwargs(
 
     assert creds._refresh_using.__self__._source_session == sess
     assert creds._refresh_using.__self__._sts_client_kwargs == {
-        "region_name": "us-east-1",
         "config": boto_config
     }
     assert creds._refresh_using.__self__._assume_role_kwargs == {
@@ -84,9 +86,9 @@ def test_assume_role_extra_kwargs(
         "RoleSessionName": session_name,
         "DurationSeconds": 900
     }
-    assert creds._refresh_using.__self__._sts_client.meta.config.region_name == "us-east-1"
     assert creds._refresh_using.__self__._sts_client.meta.config.retries['mode'] == "adaptive"
     assert creds._refresh_using.__self__._sts_client.meta.config.retries['total_max_attempts'] == 10
+    assert assume_sess.region_name == "us-east-1"
     
 
 
@@ -97,15 +99,14 @@ def test_refresh_creds(
     sts_arn: str
 ) -> None:
     sess = boto3.Session()
-    with pytest.deprecated_call():
-        assume_sess = assume_role_session(
-            source_session=sess,
-            RoleArn=role_arn,
-            RoleSessionName=session_name,
-            assume_role_kwargs={
-                "DurationSeconds": 900
-            }
-        )
+    assume_sess = assume_role(
+        source_session=sess,
+        assume_role_kwargs={
+            "RoleArn": role_arn,
+            "RoleSessionName": session_name,
+            "DurationSeconds": 900
+        }
+    )
     sts_client = assume_sess.client("sts")
     identity = sts_client.get_caller_identity()
     assert identity['Arn'] == sts_arn
@@ -133,6 +134,79 @@ def test__serialize_if_needed() -> None:
     assert result == dt_str
 
     
-    
+def test_assume_role_missing_kwargs(
+    sts_moto: None,
+    role_arn: str,
+    session_name: str,
+    sts_arn: str
+) -> None:
+    with pytest.raises(MissingKWArgError):
+        assume_role(
+            source_session=boto3.Session(),
+            assume_role_kwargs={
+                "RoleSessionName": session_name
+            }
+        )
+
+    with pytest.raises(MissingKWArgError):
+        assume_role(
+            source_session=boto3.Session(),
+            assume_role_kwargs={
+                "RoleArn": role_arn
+            }
+        )
 
 
+def test_assume_role_sts_client_forbidden_keys(
+    sts_moto: None,
+    role_arn: str,
+    session_name: str,
+    sts_arn: str
+) -> None:
+    fk = [
+        "service_name",
+        "aws_access_key_id",
+        "aws_secret_access_key",
+        "aws_session_token"
+    ]
+    sess = boto3.Session()
+    for k in fk:
+        with pytest.raises(ForbiddenKWArgError):
+            assume_role(
+                source_session=sess,
+                assume_role_kwargs={
+                    "RoleArn": role_arn,
+                    "RoleSessionName": session_name
+                },
+                sts_client_kwargs={
+                    k: "idc"
+                }
+            )
+
+
+def test_assume_role_target_session_forbidden_keys(
+    sts_moto: None,
+    role_arn: str,
+    session_name: str,
+    sts_arn: str
+) -> None:
+    fk = [
+        "aws_access_key_id",
+        "aws_secret_access_key",
+        "aws_session_token",
+        "botocore_session",
+        "profile_name"
+    ]
+    sess = boto3.Session()
+    for k in fk:
+        with pytest.raises(ForbiddenKWArgError):
+            assume_role(
+                source_session=sess,
+                assume_role_kwargs={
+                    "RoleArn": role_arn,
+                    "RoleSessionName": session_name
+                },
+                target_session_kwargs={
+                    k: "idc"
+                }
+            )
