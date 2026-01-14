@@ -1,7 +1,7 @@
 # boto3-assume
 
 
-`boto3-assume` has one simple goal. Easily create `boto3` assume role sessions with automatic credential refreshing.
+Easily create `boto3` assume role sessions with automatic credential refreshing.
 
 > **NOTE** - For `aioboto3` support, see [`aioboto3-assume`](https://github.com/btemplep/aioboto3-assume).
 

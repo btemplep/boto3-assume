@@ -115,7 +115,7 @@ def assume_role(
         import boto3
         from boto3_assume import assume_role
 
-        assume_session = assume_role_session(
+        assume_session = assume_role(
             source_session=boto3.Session(), # You must pass in a boto3 session that automatically refreshes!
             assume_role_kwargs={
                 "RoleArn": "arn:aws:iam::123412341234:role/my_role",
