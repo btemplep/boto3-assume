@@ -22,6 +22,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security 
 -->
 
+## [0.2.0] - 2026-01-13
+
+### Added
+
+- `assume_role` 
+    - replaces `assume_role_session`
+    - Allowed to pass parameters for the created session
+    - simplifies assume role APIs
+
+### Deprecated
+
+- `assume_role_session` - Deprecated in favor of the new `assume_role` function
+- `assume_role_aio_session` - Deprecated and moved to a new python package `aioboto3-assume` to simplify dependencies and split boto3 and aioboto3 functionality.
+
+
 ## [0.1.3] - 2025-11-28
 
 ### Added

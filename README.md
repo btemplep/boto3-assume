@@ -1,7 +1,9 @@
 # boto3-assume
 
 
-`boto3-assume` has one simple goal. Easily create `boto3`/`aioboto3` assume role sessions with automatic credential refreshing.
+`boto3-assume` has one simple goal. Easily create `boto3` assume role sessions with automatic credential refreshing.
+
+> **NOTE** - For `aioboto3` support, see [`aioboto3-assume`](https://github.com/btemplep/aioboto3-assume).
 
 
 ## Installation
@@ -12,23 +14,20 @@ Install with pip:
 $ pip install boto3-assume
 ```
 
-> **NOTE** - It currently doesn't come with `boto3` or `aioboto3` , so you need install to one or both as needed.
-
-
 ## Tutorial
 
-There are only 2 functions `assume_role_session` and `assume_role_aio_session`
-
-For `boto3`:
+A minimal example: 
 
 ```python
 import boto3
-from boto3_assume import assume_role_session
+from boto3_assume import assume_role
 
-assume_session = assume_role_session(
+assume_session = assume_role(
     source_session=boto3.Session(), # You must pass in a boto3 session that automatically refreshes!
-    RoleArn="arn:aws:iam::123412341234:role/my_role",
-    RoleSessionName="my-role-session"
+    assume_role_kwargs={
+        "RoleArn": "arn:aws:iam::123412341234:role/my_role",
+        "RoleSessionName": "my-role-session"
+    }
 )
 
 # Create clients, and their credentials will auto-refresh when expired!
@@ -50,62 +49,39 @@ print(sts_client.get_caller_identity())
 # }
 ```
 
-For `aioboto3`:
+Under the hood a `boto3` sts client will be created and `assume_role` called to get/refresh credentials.
 
-```python
-import asyncio
+You can pass the kwargs parameters as so:
+- `assume_role_kwargs` - Keyword arguments to pass when calling [`assume_role`](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sts/client/assume_role.html) with a boto3 STS client. 
+    - Must at least provide `RoleArn` and `RoleSessionName` as outlined in the boto3 docs.
+- `sts_client_kwargs` - Kwargs to pass when creating the [boto3 low level client](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/session.html#boto3.session.Session.client) for [`STS`](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sts.html)
+    - By default only the service argument will be passed as ``"sts"``. 
+    - Note that you should not pass in the ``service_name`` or credentials here. 
+- `target_session_kwargs` - Keyword arguments to pass when creating a the new target [boto3 Session](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/session.html)
+    - By default no arguments are passed. 
+    - Note that you should only pass in `region_name` or `aws_account_id` or other variables that will not effect credentials or credential refreshing. 
 
-import aioboto3
-from boto3_assume import assume_role_aio_session
-
-# since this uses "Deferred" credentials you don't need to call this within a coroutine or context manager
-assume_session = assume_role_session(
-    source_session=aioboto3.Session(), # You must pass in an aioboto3 session that automatically refreshes!
-    RoleArn="arn:aws:iam::123412341234:role/my_role",
-    RoleSessionName="my-role-session"
-)
-
-async def main():
-    # Create clients, and their credentials will auto-refresh when expired!
-    async with assume_session.client("sts", region_name="us-east-1") as sts_client:
-        print(await sts_client.get_caller_identity())
-        # {
-        #     "UserId": "EXAMPLEID", 
-        #     "Account": "123412341234", 
-        #     "Arn": "arn:aws:sts::123412341234:role/my_role", 
-        #     "ResponseMetadata": {
-        #         "RequestId": "asdfqwfqwfasdfasdfasfsdf", 
-        #         "HTTPStatusCode": 200, 
-        #         "HTTPHeaders": {
-        #             "server": "amazon.com", 
-        #             "date": "Tue, 27 Jun 2023 00:00:00 GMT"
-        #         }, 
-        #         "RetryAttempts": 0
-        #     }
-        # }
-
-asyncio.run(main())
-```
-
-Under the hood a `boto3`/`aioboto3` sts client will be created and `assume_role` called to get/refresh credentials.
-
-If you want you can also specify extra kwargs for the [sts client](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/session.html#boto3.session.Session.client), and for the [assume_role](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sts/client/assume_role.html) call.
-
-
-> **NOTE**: The "sts" service is already specified for the client. 
-`RoleArn` and `RoleSessionName` are used in the assume role call. 
+A more complex example:
 
 ```python
 import boto3
-from boto3_assume import assume_role_session
+from boto3_assume import assume_role
 from botocore.config import Config
 
-assume_session = assume_role_session(
-    source_session=boto3.Session(), # You must pass in a boto3 session that automatically refreshes!
-    RoleArn="arn:aws:iam::123412341234:role/my_role",
-    RoleSessionName="my-role-session",
+assume_session = assume_role(
+    source_session=boto3.Session(), 
+    assume_role_kwargs={
+        "RoleArn": "arn:aws:iam::123412341234:role/my_role",
+        "RoleSessionName": "my-role-session",
+        "DurationSeconds": 900,
+        "Tags": [
+            {
+                "Key": "MyKey",
+                "Value": "MyValue"
+            }
+        ]
+    },
     sts_client_kwargs={
-        "region_name": "us-east-1",
         "config": Config(
             retries={
                 "total_max_attempts": 10,
@@ -113,8 +89,8 @@ assume_session = assume_role_session(
             }
         )
     },
-    assume_role_kwargs={
-        "DurationSeconds": 900
+    target_session_kwargs={
+        "region_name": "us-east-1"
     }
 )
 ```
@@ -124,7 +100,7 @@ assume_session = assume_role_session(
 Install the package in editable mode with dev dependencies.
 
 ```text
-(venv) $ pip install -e .[dev,all]
+(venv) $ pip install -e .[dev]
 ```
 
 [nox](https://nox.thea.codes/en/stable/) is used to manage various dev functions.
