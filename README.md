@@ -3,7 +3,7 @@
 
 Easily create `boto3` assume role sessions with automatic credential refreshing.
 
-> **NOTE** - For `aioboto3` support, see [`aioboto3-assume`](https://github.com/btemplep/aioboto3-assume).
+> **NOTE** - For `aioboto3` support, see [aioboto3-assume](https://pypi.org/project/aioboto3-assume/).
 
 
 ## Installation
@@ -52,9 +52,9 @@ print(sts_client.get_caller_identity())
 Under the hood a `boto3` sts client will be created and `assume_role` called to get/refresh credentials.
 
 You can pass the kwargs parameters as so:
-- `assume_role_kwargs` - Keyword arguments to pass when calling [`assume_role`](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sts/client/assume_role.html) with a boto3 STS client. 
+- `assume_role_kwargs` - Keyword arguments to pass when calling [assume_role](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sts/client/assume_role.html) with a boto3 STS client. 
     - Must at least provide `RoleArn` and `RoleSessionName` as outlined in the boto3 docs.
-- `sts_client_kwargs` - Kwargs to pass when creating the [boto3 low level client](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/session.html#boto3.session.Session.client) for [`STS`](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sts.html)
+- `sts_client_kwargs` - Kwargs to pass when creating the [boto3 low level client](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/session.html#boto3.session.Session.client) for [STS](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sts.html)
     - By default only the service argument will be passed as ``"sts"``. 
     - Note that you should not pass in the ``service_name`` or credentials here. 
 - `target_session_kwargs` - Keyword arguments to pass when creating a the new target [boto3 Session](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/session.html)

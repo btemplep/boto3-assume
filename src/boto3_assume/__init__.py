@@ -18,7 +18,7 @@ A minimum example to assume a role:
     )
 """
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 __all__ = [
     "assume_role_session",
     "assume_role",

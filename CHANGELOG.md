@@ -22,6 +22,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security 
 -->
 
+## [0.2.1] - 2026-01-14
+
+### Fixed
+
+- type hints and docstrings on `assume_role`
+- README formatting
+
+
+### Security 
+
 ## [0.2.0] - 2026-01-13
 
 ### Added

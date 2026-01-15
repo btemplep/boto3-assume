@@ -73,8 +73,8 @@ def _check_forbidden_keys(name: str, kwargs: dict, forbidden_keys: list) -> None
 def assume_role(
     source_session: boto3.Session,
     assume_role_kwargs: Dict[str, Any],
-    sts_client_kwargs: Dict[str, Any] | None = None,
-    target_session_kwargs: Dict[str, Any] | None = None
+    sts_client_kwargs: Dict[str, Any] = None,
+    target_session_kwargs: Dict[str, Any] = None
 ) -> boto3.Session:
     """Generate an assume role ``boto3`` session, that will automatically refresh credentials.
 
@@ -82,14 +82,14 @@ def assume_role(
     ----------
     source_session : boto3.Session
         Source session to assume the role from. Must be a session that will automatically refresh its own credentials.
-    assume_role_kwargs : Dict[str, Any] | None, optional
+    assume_role_kwargs : Dict[str, Any], default=None
         Keyword arguments to pass when calling `assume_role <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sts/client/assume_role.html>`_. with a boto3 STS client.
         Must at least provide ``RoleArn`` and ``RoleSessionName`` as outlined in the boto3 docs.
-    sts_client_kwargs : Dict[str, Any] | None, optional
+    sts_client_kwargs : Dict[str, Any], default=None
         Kwargs to pass when creating the `boto3 low level client <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/session.html#boto3.session.Session.client>`_. for `STS client <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sts.html>`_.
         By default only the service argument will be passed as ``"sts"``. 
         Note that you should not pass in the ``service_name`` or credentials here. 
-    target_session_kwargs : Dict[str, Any] | None, optional
+    target_session_kwargs : Dict[str, Any], default=None
         Keyword arguments to pass when creating a the new target `boto3 Session <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/session.html>`_.
         By default no arguments are passed. 
         Note that you should only pass in `region_name` or `aws_account_id` or other variables that will not effect credentials or credential refreshing. 
